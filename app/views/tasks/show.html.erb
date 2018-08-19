@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @task.title %>
+</p>
+
+<p>
+  <strong>Detail:</strong>
+  <%= @task.detail %>
+</p>
+
+<p>
+  <strong>Start at:</strong>
+  <%= @task.start_at %>
+</p>
+
+<p>
+  <strong>Weather infomation:</strong>
+  <%= @task.weather_infomation %>
+</p>
+
+<p>
+  <strong>Place:</strong>
+  <%= @task.place %>
+</p>
+
+<p>
+  <strong>Latitude:</strong>
+  <%= @task.latitude %>
+</p>
+
+<p>
+  <strong>Longitude:</strong>
+  <%= @task.longitude %>
+</p>
+
+<%= link_to 'Edit', edit_task_path(@task) %> |
+<%= link_to 'Back', tasks_path %>

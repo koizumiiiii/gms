@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  detail: MyText
+  start_at: 2018-08-11 10:48:10
+  weather_infomation: MyText
+  place: MyString
+  latitude: 1.5
+  longitude: 1.5
+
+two:
+  title: MyString
+  detail: MyText
+  start_at: 2018-08-11 10:48:10
+  weather_infomation: MyText
+  place: MyString
+  latitude: 1.5
+  longitude: 1.5
