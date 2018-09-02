@@ -1,6 +1,23 @@
 class TasksController < ApplicationController
   before_action :set_task, only: [:show, :edit, :update, :destroy]
 
+  def task_list
+    tasks = Task.all.order(start_at: :desc)
+
+    result = {}
+    tasks.each do |task|
+      month = task.start_at.strftime('%Y/%m')
+      if result[month].blank?
+        result[month] = []
+      end
+      result[month] << {
+        date: task.start_at.day,
+        title: task.title
+      }
+    end
+    render json: result
+  end
+
   # GET /tasks
   # GET /tasks.json
   def index
