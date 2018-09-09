@@ -1,6 +1,13 @@
 class TasksController < ApplicationController
   before_action :set_task, only: [:show, :edit, :update, :destroy]
 
+  def add_task
+    task = Task.new(task_params)
+
+    result = { success: task.save }
+    render json: result
+  end
+
   def task_list
     tasks = Task.all.order(start_at: :desc)
 
@@ -11,6 +18,7 @@ class TasksController < ApplicationController
         result[month] = []
       end
       result[month] << {
+        id: task.id,
         date: task.start_at.day,
         title: task.title
       }

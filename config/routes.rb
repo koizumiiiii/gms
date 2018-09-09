@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   root to: 'home#index'
 
+  post 'tasks/add_task'
   get 'tasks/task_list'
 
   get 'home/index'
