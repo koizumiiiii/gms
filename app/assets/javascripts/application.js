@@ -14,3 +14,8 @@
 //= require activestorage
 //= require turbolinks
 //= require_tree .
+
+function getWindowHeight() {
+  var vh = window.innerHeight;
+  $('.getHeight').css('height', vh);
+}

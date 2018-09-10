@@ -1,20 +1,26 @@
 <template>
   <div id="app">
-    <section v-if="new_task.visible">
-      <input v-model="new_task.start_at" type="datetime-local" name="start_at"/>
-      <input v-model="new_task.title" type="text" name="title" placeholder="タスクタイトル" />
-      <input v-model="new_task.detail" type="textarea" name="detail" placeholder="内容" />
-      <button id="btn_cancel" v-on:click="cancel_new_task" type="button">cancel</button>
-      <button id="btn_add" v-on:click="add_new_task" type="button">add</button>
+    <section v-if="new_task.visible" class="add_new_task_wrapper getHeight">
+      <div class="add_new_task_inner">
+        <div class="add_new_task_inner__btn_area">
+          <button id="btn_cancel" v-on:click="cancel_new_task" type="button">×</button>
+          <button id="btn_add" v-on:click="add_new_task" type="button">add</button>
+        </div>
+        <div class="add_new_task_inner__input_area">
+          <input v-model="new_task.title" type="text" name="title" placeholder="タスクタイトル" />
+          <input v-model="new_task.start_at" type="datetime-local" name="start_at"/>
+          <textarea v-model="new_task.detail" placeholder="メモ" class="" rows="4" cols="40" /></textarea>
+        </div>
+      </div>
     </section>
-    <section v-else>
-      <button id="new_task" v-on:click="show_new_task">New Task!</button>
+    <section v-else class="add_new_task_btn">
+      <button id="new_task" v-on:click="show_new_task">+</button>
     </section>
 
-    <section v-for="(tasks, month) in task_list" v-bind:id="month">
-      <h2>{{month}}</h2>
+    <section v-for="(tasks, month) in task_list" v-bind:id="month" class="task_wrapper">
+      <h2 class="task_ym">{{month}}</h2>
       <ul>
-        <li v-for="task in tasks" v-bind:id="'row_task_' + task.id">
+        <li v-for="task in tasks" v-bind:id="'row_task_' + task.id" class="task_list">
           <div>{{task.date}} : {{task.title}}</div>
         </li>
       </ul>
@@ -77,11 +83,9 @@ export default {
     }
   }
 }
+
 </script>
 
-<style scoped>
-p {
-  font-size: 2em;
-  text-align: center;
-}
+<style>
+
 </style>
