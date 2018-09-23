@@ -9,8 +9,7 @@ class TasksController < ApplicationController
   end
 
   def task_list
-    tasks = Task.all.order(start_at: :desc)
-
+"""
     result = {}
     tasks.each do |task|
       month = task.start_at.strftime('%Y/%m')
@@ -24,6 +23,10 @@ class TasksController < ApplicationController
       }
     end
     render json: result
+"""
+
+    tasks = Task.where('start_at >= ?', Time.now).order(start_at: :asc).limit(10)
+    render json: tasks.to_a
   end
 
   # GET /tasks
