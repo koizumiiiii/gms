@@ -26,11 +26,8 @@ button {
   border-radius: 3px;
 }
 .task_wrapper {
-  padding: 10px;
+  padding: 20px 10px 10px 10px;
   position: relative;
-}
-.task_wrapper + .task_wrapper {
-  margin-top: 10px;
 }
 .task_ym {
   font-weight: normal;
@@ -107,13 +104,17 @@ textarea {
 .input_textarea {
   height: 80px;
 }
-
+.icon_loading {
+  text-align: center;
+  margin: 1em 0;
+}
 [v-cloak] {
   display: none;
 }
-.v-enter-active, .v-leave-active {
+.v-enter-active, .v-leave-active,  {
   transition: opacity 1s;
 }
 .v-enter, .v-leave-to {
   opacity: 0;
 }
+

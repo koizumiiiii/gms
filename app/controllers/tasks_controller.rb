@@ -24,8 +24,13 @@ class TasksController < ApplicationController
     end
     render json: result
 """
+    next_start_at = params[:next_start_at]&.in_time_zone || Time.now
+    next_id = params[:next_id].to_i
 
-    tasks = Task.where('start_at >= ?', Time.now).order(start_at: :asc).limit(10)
+    tasks = Task.where('(start_at = ? AND id > ?) OR ? < start_at', next_start_at, next_id, next_start_at)
+      .order(start_at: :asc, id: :asc)
+      .limit(10)
+
     render json: tasks.to_a
   end
 

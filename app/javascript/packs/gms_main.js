@@ -7,6 +7,9 @@
 
 import Vue from 'vue'
 import App from '../app.vue'
+import VueObserveVisibility from 'vue-observe-visibility'
+
+Vue.use(VueObserveVisibility)
 
 document.addEventListener('DOMContentLoaded', () => {
   const el = document.body.appendChild(document.createElement('gms_main'))
