@@ -1,34 +1,33 @@
 <template>
   <div id="app">
-    <transition v-if="new_task.show">
+    <transition v-if="newTask.show">
       <section class="add_new_task_wrapper">
         <div class="add_new_task_inner">
           <div class="add_new_task_inner__btn_area">
-            <button id="btn_cancel" v-on:click="cancel_new_task" type="button">閉じる</button>
+            <button id="btn_cancel" v-on:click="cancelNewTask" type="button">閉じる</button>
             <span>新しいタスク</span>
-            <button id="btn_add" v-on:click="add_new_task" type="button">追加する</button>
+            <button id="btn_add" v-on:click="addNewTask" type="button">追加する</button>
           </div>
           <div class="add_new_task_inner__input_area">
-            <input v-model="new_task.title" type="text" name="title" placeholder="タスクタイトル" />
-            <input v-model="new_task.start_at" type="datetime-local" name="start_at"/>
-            <textarea v-model="new_task.detail" placeholder="メモ" class="" rows="4" cols="40" /></textarea>
+            <input v-model="newTask.title" type="text" name="title" placeholder="タスクタイトル" />
+            <input v-model="newTask.startAt" type="datetime-local" name="start_at"/>
+            <textarea v-model="newTask.detail" placeholder="メモ" class="" rows="4" cols="40" /></textarea>
           </div>
         </div>
       </section>
     </transition>
     <section v-else class="add_new_task_btn">
-      <button id="new_task" v-on:click="show_new_task">+</button>
+      <button id="new_task" v-on:click="showNewTask">+</button>
     </section>
-    <section v-cloak v-for="month_list in task_list" v-bind:id="month_list.month" class="task_wrapper">
-      <h2 class="task_ym">{{month_list.month}}</h2>
+    <section v-cloak v-for="monthList in taskList" v-bind:id="monthList.month" class="task_wrapper">
+      <h2 class="task_ym">{{monthList.month}}</h2>
       <ul>
-        <li v-for="task in month_list.tasks" v-bind:id="'row_task_' + task.id" class="task_list">
+        <li v-for="task in monthList.tasks" v-bind:id="'row_task_' + task.id" class="task_list">
           <div>{{task.start_at.slice(8, 10)}} : {{task.title}}</div>
         </li>
       </ul>
     </section>
-    <section class="icon_loading" v-observe-visibility="visibilityChanged"><img v-show="isVisible" src="/images/icon_loader.gif"></section>
-    <!--load icon-->
+    <section class="icon_loading" v-observe-visibility="visibilityChanged"><img v-show="isVisibleLoadicon" src="/images/icon_loader.gif"></section>
   </div>
 </template>
 
@@ -40,92 +39,93 @@ axios.defaults.headers.common['X-CSRF-Token'] = token
 export default {
   data: function () {
     return {
-      new_task: {
+      newTask: {
         show: false,
-        start_at: '',
+        startAt: '',
         title: '',
         detail: ''
       },
-      is_visible_loadicon: true,
-      task_list: []
+      isVisibleLoadicon: true,
+      taskList: []
     }
   },
   mounted: function() {
-    this.fetch_tasks();
+    this.fetchTasks();
   },
   methods: {
-    visibilityChanged: function(is_visible) {
-      if (is_visible) {
+    visibilityChanged: function(isVisibleLoadicon) {
+      if (isVisibleLoadicon && this.$data.taskList.length > 0) {
         // 次のn件をロードする
-        var self = this;
+        var monthArray = this.$data.taskList;
+        var lastMonth = monthArray[monthArray.length - 1];
+        var taskArray = lastMonth.tasks;
+        var lastTask = taskArray[taskArray.length - 1];
         axios.get('/tasks/task_list', {
           params: {
-            // this.$data.task_listの一番最後のtaskのstar_atとidを指定する
-            next_start_at: "",
-            next_id: 123
+            // this.$data.taskListの一番最後のtaskのstarAtとidを指定する
+            next_start_at: lastTask.start_at,
+            next_id: lastTask.id
           }
         }).then((response) => {
-          if (response.dataが1件以上のデータが有る時) {
-            this.update_tasks(response.data);
+          if (Object.keys(response.data).length > 0) {
+            this.updateTasks(response.data);
           } else {
-            this.$data.is_visible_loadicon = false
+            this.$data.isVisibleLoadicon = false
           }
         })
       }
     },
-    add_new_task: function() {
+    addNewTask: function() {
       // api succese or error
       axios.post('/tasks/add_task', {
         task: {
-          title: this.$data.new_task.title,
-          detail: this.$data.new_task.detail,
-          start_at: this.$data.new_task.start_at
+          title: this.$data.newTask.title,
+          detail: this.$data.newTask.detail,
+          start_at: this.$data.newTask.startAt
         }
       }).then((response) => {
         if (response.data.success) {
-          this.$data.new_task.title = '';
-          this.$data.new_task.detail = '';
-          this.$data.new_task.show = false;
-          this.fetch_tasks();
+          this.$data.newTask.title = '';
+          this.$data.newTask.detail = '';
+          this.$data.newTask.show = false;
+          this.fetchTasks();
         } else {
           alert("error!")
         }
       });
     },
-    cancel_new_task: function() {
-      this.$data.new_task.show = false;
+    cancelNewTask: function() {
+      this.$data.newTask.show = false;
     },
-    show_new_task: function(event) {
-      this.$data.new_task.show = true;
+    showNewTask: function(event) {
+      this.$data.newTask.show = true;
     },
-    update_tasks: function(task_array) {
-      for (var i in task_array) {
-        var task = task_array[i];
+    updateTasks: function(taskArray) {
+      for (var i in taskArray) {
+        var task = taskArray[i];
         var month = task.start_at.slice(0, 7).replace('-', '/');
 
-        var month_data = this.$data.task_list.find(function(element) {
+        var monthData = this.$data.taskList.find(function(element) {
           return element.month == month;
         });
-      	if (typeof(month_data) == 'undefined') {
-          month_data = { month: month, tasks: [] }
-          this.$data.task_list.push(month_data);
+      	if (typeof(monthData) == 'undefined') {
+          monthData = { month: month, tasks: [] }
+          this.$data.taskList.push(monthData);
       	}
 
-        var found_index = month_data.tasks.findIndex(function(element) {
+        var foundIndex = monthData.tasks.findIndex(function(element) {
           return element.start_at > task.start_at;
         });
-        if (found_index >= 0) {
-          month_data.tasks.splice(found_index, 0, task);
+        if (foundIndex >= 0) {
+          monthData.tasks.splice(foundIndex, 0, task);
         } else {
-          month_data.tasks.push(task);
+          monthData.tasks.push(task);
         }
       }
     },
-    fetch_tasks: function() {
-      var self = this;
+    fetchTasks: function() {
       axios.get('/tasks/task_list').then((response) => {
-        this.update_tasks(response.data);
-        console.log(self.$data.task_list);
+        this.updateTasks(response.data);
       })
     }
   }
