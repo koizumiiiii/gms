@@ -118,3 +118,17 @@ textarea {
   opacity: 0;
 }
 
+.add_place_area {
+  margin-top: 10px;
+  &.active {
+    margin-top: 0;
+    position: fixed;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    z-index: 1;
+    background: #fff;
+    padding: 10px;
+  }
+}

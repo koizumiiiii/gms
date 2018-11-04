@@ -11,8 +11,23 @@
           <div class="add_new_task_inner__input_area">
             <input v-model="newTask.title" type="text" name="title" placeholder="タスクタイトル" />
             <input v-model="newTask.startAt" type="datetime-local" name="start_at"/>
+            <vue-google-autocomplete
+              ref="newTask.place"
+              id="map"
+              name="place"
+              classname="form-control"
+              placeholder="場所"
+              types=""
+              country="jp"
+              v-on:placechanged="getAddressData"
+            >
+            </vue-google-autocomplete>
+            <input v-model="newTask.lat" type="hidden" name="lat" />
+            <input v-model="newTask.lon" type="hidden" name="lon" />
+            <input v-model="newTask.wether" type="hidden" name="wether" />
             <textarea v-model="newTask.detail" placeholder="メモ" class="" rows="4" cols="40" /></textarea>
           </div>
+          <div class="suggest_location"></div>
         </div>
       </section>
     </transition>
@@ -32,21 +47,29 @@
 </template>
 
 <script>
+import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import axios from 'axios';
+
 const token = document.getElementsByName('csrf-token')[0].getAttribute('content')
 axios.defaults.headers.common['X-CSRF-Token'] = token
 
 export default {
+  components: { VueGoogleAutocomplete },
   data: function () {
     return {
       newTask: {
         show: false,
         startAt: '',
         title: '',
+        place: '',
+        lat: '',
+        lon: '',
+        wether: '',
         detail: ''
       },
       isVisibleLoadicon: true,
-      taskList: []
+      taskList: [],
+      isActive: false
     }
   },
   mounted: function() {
@@ -75,11 +98,21 @@ export default {
         })
       }
     },
+    getAddressData: function (addressData, placeResultData, id) {
+      console.table(addressData);
+      console.table(placeResultData);
+      this.$data.newTask.lat = addressData.latitude;
+      this.$data.newTask.lon = addressData.longitude;
+    },
     addNewTask: function() {
       // api succese or error
       axios.post('/tasks/add_task', {
         task: {
           title: this.$data.newTask.title,
+          place: this.$data.newTask.place,
+          latitude: this.$data.newTask.lat,
+          longitude: this.$data.newTask.lon,
+          weather_infomation: this.$data.newTask.wether,
           detail: this.$data.newTask.detail,
           start_at: this.$data.newTask.startAt
         }

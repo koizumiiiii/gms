@@ -8,8 +8,10 @@
 import Vue from 'vue'
 import App from '../app.vue'
 import VueObserveVisibility from 'vue-observe-visibility'
+// import VueGoogleAutocomplete from 'vue-google-autocomplete'
 
 Vue.use(VueObserveVisibility)
+// Vue.use(VueGoogleAutocomplete)
 
 document.addEventListener('DOMContentLoaded', () => {
   const el = document.body.appendChild(document.createElement('gms_main'))
