@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: [:show, :edit, :update, :destroy]
+  before_action :set_task, only: [:show, :edit, :update, :destroy, :update_task]
 
   def add_task
     task = Task.new(task_params)
@@ -8,22 +8,13 @@ class TasksController < ApplicationController
     render json: result
   end
 
-  def task_list
-"""
-    result = {}
-    tasks.each do |task|
-      month = task.start_at.strftime('%Y/%m')
-      if result[month].blank?
-        result[month] = []
-      end
-      result[month] << {
-        id: task.id,
-        date: task.start_at.day,
-        title: task.title
-      }
-    end
+  # /tasks/[id]/update_task
+  def update_task
+    result = { success: @task.update(task_params) }
     render json: result
-"""
+  end
+
+  def task_list
     next_start_at = params[:next_start_at]&.in_time_zone || Time.now
     next_id = params[:next_id].to_i
 

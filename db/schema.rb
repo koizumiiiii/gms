@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_08_154238) do
+ActiveRecord::Schema.define(version: 2018_11_11_104231) do
 
   create_table "tasks", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin", force: :cascade do |t|
     t.string "title"
@@ -18,8 +18,8 @@ ActiveRecord::Schema.define(version: 2018_08_08_154238) do
     t.datetime "start_at"
     t.text "weather_infomation"
     t.string "place"
-    t.float "latitude"
-    t.float "longitude"
+    t.decimal "latitude", precision: 11, scale: 8
+    t.decimal "longitude", precision: 11, scale: 8
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

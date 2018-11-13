@@ -16,7 +16,6 @@ body {
 }
 #app {
   position: relative;
-  padding: 20px 0;
 }
 button {
   border: $border;
@@ -39,6 +38,8 @@ button {
   padding:15px;
   background: #fff;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 .task_list + .task_list {
   margin-top: 5px;
@@ -131,4 +132,29 @@ textarea {
     background: #fff;
     padding: 10px;
   }
+}
+
+.task_head,
+.icon_weather {
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  word-break: break-word;
+  flex-grow: 1;
+}
+.task_head__week {
+  font-size: 20px;
+}
+.task_body {
+    display: inline-block;
+    width: 60%;
+    vertical-align: middle;
+    padding: 0 15px;
+    margin: 0 15px;
+    font-family: arial;
+    border-left: solid 2px #eee;
+    flex-grow: 2;
+}
+.task_body__txt {
+  font-size: 18px;
 }

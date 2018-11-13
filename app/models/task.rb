@@ -5,10 +5,7 @@ class Task < ApplicationRecord
   validates :title, :start_at, presence: true
   validate :check_start_at
 
-  before_save do
-    update_wether_information
-    return true
-  end
+  before_save :update_wether_information
 
   def check_start_at
     if start_at.present? && start_at < Time.now
@@ -17,10 +14,9 @@ class Task < ApplicationRecord
   end
 
   def update_wether_information
-
     return if latitude.blank? || longitude.blank?
 
-    days = ((start_at.beginning_of_day - Time.now.beginning_of_day) / (60 * 60 * 24)).to_i
+    days = ((start_at.beginning_of_day - Time.current.beginning_of_day) / (60 * 60 * 24)).to_i
     return if days < 0 || 15 < days
 
     # hash形式でパラメタ文字列を指定し、URL形式にエンコード
@@ -47,15 +43,10 @@ class Task < ApplicationRecord
       case response
       # 成功した場合
       when Net::HTTPSuccess
-        weather_infomation = response.body
+        self.weather_infomation = response.body
 
         # responseのbody要素をJSON形式で解釈し、hashに変換
-        @result = JSON.parse(response.body)
-        # 表示用の変数に結果を格納
-        # @zipcode = @result["results"][0]["zipcode"]
-        # @address1 = @result["results"][0]["address1"]
-        # @address2 = @result["results"][0]["address2"]
-        # @address3 = @result["results"][0]["address3"]
+        # @result = JSON.parse(response.body)
       # 別のURLに飛ばされた場合
       when Net::HTTPRedirection
         @message = "Redirection: code=#{response.code} message=#{response.message}"
@@ -73,6 +64,6 @@ class Task < ApplicationRecord
     rescue => e
       @message = e.message
     end
-
+    return true
   end
 end

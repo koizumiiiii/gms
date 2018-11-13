@@ -20,6 +20,7 @@
               types=""
               country="jp"
               v-on:placechanged="getAddressData"
+              v-model="newTask.place"
             >
             </vue-google-autocomplete>
             <input v-model="newTask.lat" type="hidden" name="lat" />
@@ -38,7 +39,15 @@
       <h2 class="task_ym">{{monthList.month}}</h2>
       <ul>
         <li v-for="task in monthList.tasks" v-bind:id="'row_task_' + task.id" class="task_list">
-          <div>{{task.start_at.slice(8, 10)}} : {{task.title}}</div>
+          <div class="task_head">
+              <time class="task_day">{{task.start_at.slice(8, 10)}}</time>
+              <p class="task_head__week">曜日</p>
+          </div>
+          <div class="task_body">
+            <time class="task_time">{{task.start_at.slice(11, 16)}}</time>
+            <p class="task_body__txt">{{task.title}}</p>
+          </div>
+          <div class="icon_wether"><img v-bind:src="task.weather_infomation"></div>
         </li>
       </ul>
     </section>
@@ -99,8 +108,7 @@ export default {
       }
     },
     getAddressData: function (addressData, placeResultData, id) {
-      console.table(addressData);
-      console.table(placeResultData);
+      this.$data.newTask.place = placeResultData.name;
       this.$data.newTask.lat = addressData.latitude;
       this.$data.newTask.lon = addressData.longitude;
     },
@@ -119,11 +127,13 @@ export default {
       }).then((response) => {
         if (response.data.success) {
           this.$data.newTask.title = '';
+          this.$data.newTask.place = '';
           this.$data.newTask.detail = '';
+          this.$data.newTask.startAt = '';
           this.$data.newTask.show = false;
           this.fetchTasks();
         } else {
-          alert("error!")
+          alert("error!");
         }
       });
     },
@@ -136,8 +146,17 @@ export default {
     updateTasks: function(taskArray) {
       for (var i in taskArray) {
         var task = taskArray[i];
-        var month = task.start_at.slice(0, 7).replace('-', '/');
 
+        // weather icon
+        if (task.weather_infomation != "" && task.weather_infomation) {
+          var weatherArray = JSON.parse(task.weather_infomation);
+          var keysWeather = Object.keys(weatherArray.list);
+          var lenKeysWeather = keysWeather.length;
+          var startingDateWeather = weatherArray.list[keysWeather[lenKeysWeather - 1]];
+          task.weather_infomation = `//openweathermap.org/img/w/${startingDateWeather.weather[0]['icon']}.png`;
+        }
+
+        var month = task.start_at.slice(0, 7).replace('-', '/');
         var monthData = this.$data.taskList.find(function(element) {
           return element.month == month;
         });
