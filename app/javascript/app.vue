@@ -25,10 +25,40 @@
             </vue-google-autocomplete>
             <input v-model="newTask.lat" type="hidden" name="lat" />
             <input v-model="newTask.lon" type="hidden" name="lon" />
-            <input v-model="newTask.wether" type="hidden" name="wether" />
+            <input v-model="newTask.weather" type="hidden" name="weather" />
             <textarea v-model="newTask.detail" placeholder="メモ" class="" rows="4" cols="40" /></textarea>
           </div>
-          <div class="suggest_location"></div>
+        </div>
+      </section>
+    </transition>
+    <transition v-if="changeTask.show">
+      <section class="add_new_task_wrapper">
+        <div class="add_new_task_inner">
+          <div class="add_new_task_inner__btn_area">
+            <button id="btn_cancel" v-on:click="" type="button">閉じる</button>
+            <span>編集</span>
+            <button id="btn_add" v-on:click="" type="button">完了</button>
+          </div>
+          <div class="add_new_task_inner__input_area">
+            <input v-model="changeTask.title" type="text" name="title" placeholder="タスクタイトル" />
+            <input v-model="changeTask.startAt" type="datetime-local" name="start_at"/>
+            <vue-google-autocomplete
+              ref="changeTask.place"
+              id="map"
+              name="place"
+              classname="form-control"
+              placeholder="場所"
+              types=""
+              country="jp"
+              v-on:placechanged="getAddressData"
+              v-model="changeTask.place"
+            >
+            </vue-google-autocomplete>
+            <input v-model="changeTask.lat" type="hidden" name="lat" />
+            <input v-model="changeTask.lon" type="hidden" name="lon" />
+            <input v-model="changeTask.weather" type="hidden" name="weather" />
+            <textarea v-model="changeTask.detail" placeholder="メモ" class="" rows="4" cols="40" /></textarea>
+          </div>
         </div>
       </section>
     </transition>
@@ -38,7 +68,7 @@
     <section v-cloak v-for="monthList in taskList" v-bind:id="monthList.month" class="task_wrapper">
       <h2 class="task_ym">{{monthList.month}}</h2>
       <ul>
-        <li v-for="task in monthList.tasks" v-bind:id="'row_task_' + task.id" class="task_list">
+        <li v-on:click="changeTask"　v-for="task in monthList.tasks" v-bind:id="'row_task_' + task.id" class="task_list">
           <div class="task_head">
               <time class="task_day">{{task.start_at.slice(8, 10)}}</time>
               <p class="task_head__week">曜日</p>
@@ -47,7 +77,8 @@
             <time class="task_time">{{task.start_at.slice(11, 16)}}</time>
             <p class="task_body__txt">{{task.title}}</p>
           </div>
-          <div class="icon_wether"><img v-bind:src="task.weather_infomation"></div>
+          <div v-if="task.weather_infomation" class="icon_weather"><img v-bind:src="task.weather_infomation"></div>
+          <div v-else class="icon_weather">－</div>
         </li>
       </ul>
     </section>
@@ -73,7 +104,7 @@ export default {
         place: '',
         lat: '',
         lon: '',
-        wether: '',
+        weather: '',
         detail: ''
       },
       isVisibleLoadicon: true,
@@ -120,7 +151,7 @@ export default {
           place: this.$data.newTask.place,
           latitude: this.$data.newTask.lat,
           longitude: this.$data.newTask.lon,
-          weather_infomation: this.$data.newTask.wether,
+          weather_infomation: this.$data.newTask.weather,
           detail: this.$data.newTask.detail,
           start_at: this.$data.newTask.startAt
         }
@@ -143,12 +174,19 @@ export default {
     showNewTask: function(event) {
       this.$data.newTask.show = true;
     },
+    changeTask: function(event) {
+      this.$data.newTask.show = true;
+      var thisTaskId = event.currentTarget.id.slice(9);
+      console.log(thisTaskId);
+      axios.post(`/tasks/${thisTaskId}/update_task`).then((response) => {
+      });
+    },
     updateTasks: function(taskArray) {
       for (var i in taskArray) {
         var task = taskArray[i];
 
         // weather icon
-        if (task.weather_infomation != "" && task.weather_infomation) {
+        if (task.weather_infomation) {
           var weatherArray = JSON.parse(task.weather_infomation);
           var keysWeather = Object.keys(weatherArray.list);
           var lenKeysWeather = keysWeather.length;

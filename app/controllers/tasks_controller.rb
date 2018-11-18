@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: [:show, :edit, :update, :destroy, :update_task]
+  before_action :set_task, only: [:show, :edit, :update, :destroy, :change_task]
 
   def add_task
     task = Task.new(task_params)
