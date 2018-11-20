@@ -27,7 +27,7 @@ class Task < ApplicationRecord
       appid: OPENWEATHERMAP_APPID
     })
     # URIを解析し、hostやportをバラバラに取得できるようにする
-    uri = URI.parse("#{OPENWEATHERMAP_API}?#{api_params}")
+    uri = URI.parse("#{OPENWEATHERMAP_API}?#{api_params}&units=metric")
     # リクエストパラメタを、インスタンス変数に格納
     response = Net::HTTP.start(uri.host, uri.port) do |http|
       # 接続時に待つ最大秒数を設定

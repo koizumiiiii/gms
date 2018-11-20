@@ -1,18 +1,23 @@
 <template>
   <div id="app">
-    <transition v-if="newTask.show">
-      <section class="add_new_task_wrapper">
-        <div class="add_new_task_inner">
-          <div class="add_new_task_inner__btn_area">
+    <transition v-if="formTask.show">
+      <div class="form_task_wrapper">
+        <div class="form_task_inner">
+          <div v-if="!formTask.id" class="form_task_inner__btn_area">
             <button id="btn_cancel" v-on:click="cancelNewTask" type="button">閉じる</button>
             <span>新しいタスク</span>
             <button id="btn_add" v-on:click="addNewTask" type="button">追加する</button>
           </div>
-          <div class="add_new_task_inner__input_area">
-            <input v-model="newTask.title" type="text" name="title" placeholder="タスクタイトル" />
-            <input v-model="newTask.startAt" type="datetime-local" name="start_at"/>
+          <div v-if="formTask.id" class="form_task_inner__btn_area">
+            <button id="btn_cancel" v-on:click="cancelNewTask" type="button">閉じる</button>
+            <span>タスクの更新</span>
+            <button id="btn_update" v-on:click="updateTask" type="button">更新する</button>
+          </div>
+          <div class="form_task_inner__input_area">
+            <input v-model="formTask.title" type="text" name="title" placeholder="タスクタイトル" />
+            <input v-model="formTask.startAt" type="datetime-local" name="start_at"/>
             <vue-google-autocomplete
-              ref="newTask.place"
+              ref="formTask.place"
               id="map"
               name="place"
               classname="form-control"
@@ -20,69 +25,41 @@
               types=""
               country="jp"
               v-on:placechanged="getAddressData"
-              v-model="newTask.place"
+              v-model="formTask.place"
             >
             </vue-google-autocomplete>
-            <input v-model="newTask.lat" type="hidden" name="lat" />
-            <input v-model="newTask.lon" type="hidden" name="lon" />
-            <input v-model="newTask.weather" type="hidden" name="weather" />
-            <textarea v-model="newTask.detail" placeholder="メモ" class="" rows="4" cols="40" /></textarea>
+            <input v-model="formTask.lat" type="hidden" name="lat" />
+            <input v-model="formTask.lon" type="hidden" name="lon" />
+            <input v-model="formTask.weather" type="hidden" name="weather" />
+            <textarea v-model="formTask.detail" placeholder="メモ" class="" rows="4" cols="40" /></textarea>
           </div>
         </div>
-      </section>
+      </div>
     </transition>
-    <transition v-if="changeTask.show">
-      <section class="add_new_task_wrapper">
-        <div class="add_new_task_inner">
-          <div class="add_new_task_inner__btn_area">
-            <button id="btn_cancel" v-on:click="" type="button">閉じる</button>
-            <span>編集</span>
-            <button id="btn_add" v-on:click="" type="button">完了</button>
-          </div>
-          <div class="add_new_task_inner__input_area">
-            <input v-model="changeTask.title" type="text" name="title" placeholder="タスクタイトル" />
-            <input v-model="changeTask.startAt" type="datetime-local" name="start_at"/>
-            <vue-google-autocomplete
-              ref="changeTask.place"
-              id="map"
-              name="place"
-              classname="form-control"
-              placeholder="場所"
-              types=""
-              country="jp"
-              v-on:placechanged="getAddressData"
-              v-model="changeTask.place"
-            >
-            </vue-google-autocomplete>
-            <input v-model="changeTask.lat" type="hidden" name="lat" />
-            <input v-model="changeTask.lon" type="hidden" name="lon" />
-            <input v-model="changeTask.weather" type="hidden" name="weather" />
-            <textarea v-model="changeTask.detail" placeholder="メモ" class="" rows="4" cols="40" /></textarea>
-          </div>
-        </div>
-      </section>
-    </transition>
-    <section v-else class="add_new_task_btn">
+    <div v-else class="form_task_btn">
       <button id="new_task" v-on:click="showNewTask">+</button>
-    </section>
-    <section v-cloak v-for="monthList in taskList" v-bind:id="monthList.month" class="task_wrapper">
+    </div>
+    <section v-cloak v-for="(monthList, monthIndex) in taskList" v-bind:id="monthList.month" class="task_wrapper">
       <h2 class="task_ym">{{monthList.month}}</h2>
       <ul>
-        <li v-on:click="changeTask"　v-for="task in monthList.tasks" v-bind:id="'row_task_' + task.id" class="task_list">
+        <li v-on:click="changeTask" v-for="(task, taskIndex) in monthList.tasks" v-bind:id="'row_task_' + task.id" v-bind:data-month-index="monthIndex" v-bind:data-task-index="taskIndex" class="task_list">
           <div class="task_head">
               <time class="task_day">{{task.start_at.slice(8, 10)}}</time>
-              <p class="task_head__week">曜日</p>
+              <p class="task_head__week" v-html="dayOfWeek(task.start_at)"></p>
           </div>
           <div class="task_body">
             <time class="task_time">{{task.start_at.slice(11, 16)}}</time>
             <p class="task_body__txt">{{task.title}}</p>
           </div>
-          <div v-if="task.weather_infomation" class="icon_weather"><img v-bind:src="task.weather_infomation"></div>
+          <div v-if="task.weather_infomation" class="icon_weather">
+            <img v-bind:src="task.weather_infomation">
+            <span class="temp">{{task.temperature}}</span>
+          </div>
           <div v-else class="icon_weather">－</div>
         </li>
       </ul>
     </section>
-    <section class="icon_loading" v-observe-visibility="visibilityChanged"><img v-show="isVisibleLoadicon" src="/images/icon_loader.gif"></section>
+    <div class="icon_loading" v-observe-visibility="visibilityChanged"><img v-show="isVisibleLoadicon" src="/images/icon_loader.gif"></div>
   </div>
 </template>
 
@@ -97,7 +74,8 @@ export default {
   components: { VueGoogleAutocomplete },
   data: function () {
     return {
-      newTask: {
+      formTask: {
+        id : null,
         show: false,
         startAt: '',
         title: '',
@@ -105,6 +83,7 @@ export default {
         lat: '',
         lon: '',
         weather: '',
+        temperature: '',
         detail: ''
       },
       isVisibleLoadicon: true,
@@ -131,7 +110,7 @@ export default {
           }
         }).then((response) => {
           if (Object.keys(response.data).length > 0) {
-            this.updateTasks(response.data);
+            this.buildTaskList(response.data);
           } else {
             this.$data.isVisibleLoadicon = false
           }
@@ -139,29 +118,57 @@ export default {
       }
     },
     getAddressData: function (addressData, placeResultData, id) {
-      this.$data.newTask.place = placeResultData.name;
-      this.$data.newTask.lat = addressData.latitude;
-      this.$data.newTask.lon = addressData.longitude;
+      this.$data.formTask.place = placeResultData.name;
+      this.$data.formTask.lat = addressData.latitude;
+      this.$data.formTask.lon = addressData.longitude;
+    },
+    resetFormData: function () {
+      this.$data.formTask.id = '';
+      this.$data.formTask.title = '';
+      this.$data.formTask.place = '';
+      this.$data.formTask.detail = '';
+      this.$data.formTask.startAt = '';
     },
     addNewTask: function() {
       // api succese or error
       axios.post('/tasks/add_task', {
         task: {
-          title: this.$data.newTask.title,
-          place: this.$data.newTask.place,
-          latitude: this.$data.newTask.lat,
-          longitude: this.$data.newTask.lon,
-          weather_infomation: this.$data.newTask.weather,
-          detail: this.$data.newTask.detail,
-          start_at: this.$data.newTask.startAt
+          title: this.$data.formTask.title,
+          place: this.$data.formTask.place,
+          latitude: this.$data.formTask.lat,
+          longitude: this.$data.formTask.lon,
+          weather_infomation: this.$data.formTask.weather,
+          temperature: this.$data.formTask.temperature,
+          detail: this.$data.formTask.detail,
+          start_at: this.$data.formTask.startAt
         }
       }).then((response) => {
         if (response.data.success) {
-          this.$data.newTask.title = '';
-          this.$data.newTask.place = '';
-          this.$data.newTask.detail = '';
-          this.$data.newTask.startAt = '';
-          this.$data.newTask.show = false;
+          this.resetFormData();
+          this.$data.formTask.show = false;
+          this.fetchTasks();
+        } else {
+          alert("error!");
+        }
+      });
+    },
+    updateTask: function() {
+      // api succese or error
+      axios.post('/tasks/' + this.$data.formTask.id + '/update_task', {
+        task: {
+          title: this.$data.formTask.title,
+          place: this.$data.formTask.place,
+          latitude: this.$data.formTask.lat,
+          longitude: this.$data.formTask.lon,
+          weather_infomation: this.$data.formTask.weather,
+          temperature: this.$data.formTask.temperature,
+          detail: this.$data.formTask.detail,
+          start_at: this.$data.formTask.startAt
+        }
+      }).then((response) => {
+        if (response.data.success) {
+          this.resetFormData();
+          this.$data.formTask.show = false;
           this.fetchTasks();
         } else {
           alert("error!");
@@ -169,29 +176,46 @@ export default {
       });
     },
     cancelNewTask: function() {
-      this.$data.newTask.show = false;
+      this.$data.formTask.show = false;
+      this.resetFormData();
     },
     showNewTask: function(event) {
-      this.$data.newTask.show = true;
+      this.$data.formTask.show = true;
     },
     changeTask: function(event) {
-      this.$data.newTask.show = true;
-      var thisTaskId = event.currentTarget.id.slice(9);
-      console.log(thisTaskId);
-      axios.post(`/tasks/${thisTaskId}/update_task`).then((response) => {
+      var monthIndex = parseInt(event.currentTarget.getAttribute('data-month-index'));
+      var taskIndex = parseInt(event.currentTarget.getAttribute('data-task-index'));
+
+      var targetTask = this.$data.taskList[monthIndex].tasks[taskIndex];
+      this.$data.formTask.id = targetTask.id;
+      this.$data.formTask.title = targetTask.title;
+      this.$data.formTask.place = targetTask.place;
+      this.$data.formTask.detail = targetTask.detail;
+      this.$data.formTask.startAt = targetTask.start_at.slice(0, 16);
+      this.$data.formTask.lat = targetTask.latitude;
+      this.$data.formTask.lon = targetTask.longitude;
+      this.$data.formTask.weather = targetTask.weather_information;
+      this.$data.formTask.temperature = targetTask.temperature;
+      this.$data.formTask.show = true;
+
+      // vue-google-autocompleteの処理でv-modelのバインドが動かないので、強引に値を上書きしている。
+      setTimeout(function(){
+        document.getElementById('map').value = targetTask.place;
       });
     },
-    updateTasks: function(taskArray) {
+
+    buildTaskList: function(taskArray) {
       for (var i in taskArray) {
         var task = taskArray[i];
 
-        // weather icon
+        // weather_iconと気温
         if (task.weather_infomation) {
           var weatherArray = JSON.parse(task.weather_infomation);
           var keysWeather = Object.keys(weatherArray.list);
           var lenKeysWeather = keysWeather.length;
           var startingDateWeather = weatherArray.list[keysWeather[lenKeysWeather - 1]];
           task.weather_infomation = `//openweathermap.org/img/w/${startingDateWeather.weather[0]['icon']}.png`;
+          task.temperature = Math.ceil(startingDateWeather.main.temp * 10 ) / 10 + '℃';
         }
 
         var month = task.start_at.slice(0, 7).replace('-', '/');
@@ -213,9 +237,24 @@ export default {
         }
       }
     },
+    dayOfWeek: function(start_at) {
+      var WeekChars = [ "日", "月", "火", "水", "木", "金", "土" ];
+      var dObj = new Date(start_at);
+      var wDay = dObj.getDay();
+      var sunColor = `<span style="color: #ff5561;">${WeekChars[wDay]}</span>`;
+      var satColor = `<span style="color: #55a1ff;">${WeekChars[wDay]}</span>`;
+      if (wDay == 0) {
+        return sunColor;
+      } else if (wDay == 6) {
+        return satColor;
+      } else {
+        return WeekChars[wDay];
+      }
+    },
     fetchTasks: function() {
+      this.$data.taskList = [];
       axios.get('/tasks/task_list').then((response) => {
-        this.updateTasks(response.data);
+        this.buildTaskList(response.data);
       })
     }
   }
@@ -224,5 +263,4 @@ export default {
 </script>
 
 <style>
-
 </style>

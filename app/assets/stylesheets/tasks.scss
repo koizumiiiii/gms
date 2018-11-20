@@ -44,13 +44,13 @@ button {
 .task_list + .task_list {
   margin-top: 5px;
 }
-.add_new_task_btn {
+.form_task_btn {
   position: fixed;
   bottom: 10px;
   right: 10px;
   z-index: 10;
 }
-.add_new_task_btn button {
+.form_task_btn button {
   border: 0;
   border-radius: 50%;
   width: 40px;
@@ -58,7 +58,7 @@ button {
   -webkit-box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12), 0 3px 5px -1px rgba(0,0,0,0.2);
   box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12), 0 3px 5px -1px rgba(0,0,0,0.2);
 }
-.add_new_task_wrapper {
+.form_task_wrapper {
   background: rgba(000, 000, 000, .2);
   display: block;
   width: 100%;
@@ -66,7 +66,7 @@ button {
   position: fixed;
   z-index: 10;
 }
-.add_new_task_inner {
+.form_task_inner {
   background: #fff;
   width: 95%;
   padding: 10px;
@@ -76,7 +76,7 @@ button {
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
-.add_new_task_inner__btn_area {
+.form_task_inner__btn_area {
   display: flex;
   margin-bottom: 10px;
   justify-content: space-between;
@@ -143,6 +143,17 @@ textarea {
   word-break: break-word;
   flex-grow: 1;
   width: 50px;
+  position: relative;
+  img {
+    margin-top: -10px;
+  }
+  .temp {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    font-size: 14px;
+  }
 }
 .task_head__week {
   font-size: 20px;
