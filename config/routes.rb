@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 
   post 'tasks/add_task'
   post 'tasks/:id/update_task' => 'tasks#update_task'
+  post 'tasks/:id/delete_task' => 'tasks#delete_task'
   get 'tasks/task_list'
 
   get 'home/index'

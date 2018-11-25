@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: [:show, :edit, :update, :destroy, :update_task]
+  before_action :set_task, only: [:show, :edit, :update, :destroy, :update_task, :delete_task]
 
   def add_task
     task = Task.new(task_params)
@@ -11,6 +11,11 @@ class TasksController < ApplicationController
   # /tasks/[id]/update_task
   def update_task
     result = { success: @task.update(task_params) }
+    render json: result
+  end
+
+  def delete_task
+    result = { success: @task.destroy }
     render json: result
   end
 

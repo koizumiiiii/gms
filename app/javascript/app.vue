@@ -1,17 +1,18 @@
 <template>
   <div id="app">
+    <h1 class="title"></h1>
     <transition v-if="formTask.show">
       <div class="form_task_wrapper">
         <div class="form_task_inner">
           <div v-if="!formTask.id" class="form_task_inner__btn_area">
-            <button id="btn_cancel" v-on:click="cancelNewTask" type="button">閉じる</button>
+            <button class="btn_cancel" v-on:click="cancelNewTask" type="button">閉じる</button>
             <span>新しいタスク</span>
-            <button id="btn_add" v-on:click="addNewTask" type="button">追加する</button>
+            <button class="btn_add" v-on:click="addNewTask" type="button">追加する</button>
           </div>
           <div v-if="formTask.id" class="form_task_inner__btn_area">
-            <button id="btn_cancel" v-on:click="cancelNewTask" type="button">閉じる</button>
+            <button class="btn_cancel" v-on:click="cancelNewTask" type="button">閉じる</button>
             <span>タスクの更新</span>
-            <button id="btn_update" v-on:click="updateTask" type="button">更新する</button>
+            <button class="btn_update" v-on:click="updateTask" type="button">更新する</button>
           </div>
           <div class="form_task_inner__input_area">
             <input v-model="formTask.title" type="text" name="title" placeholder="タスクタイトル" />
@@ -32,6 +33,9 @@
             <input v-model="formTask.lon" type="hidden" name="lon" />
             <input v-model="formTask.weather" type="hidden" name="weather" />
             <textarea v-model="formTask.detail" placeholder="メモ" class="" rows="4" cols="40" /></textarea>
+            <div v-if="formTask.id" class="form_task_inner__input_area__delete">
+              <button class="btn_delete" type="button" v-on:click="deleteTask">タスクの削除</button>
+            </div>
           </div>
         </div>
       </div>
@@ -59,7 +63,7 @@
         </li>
       </ul>
     </section>
-    <div class="icon_loading" v-observe-visibility="visibilityChanged"><img v-show="isVisibleLoadicon" src="/images/icon_loader.gif"></div>
+    <div id="loading" class="icon_loading" v-observe-visibility="visibilityChanged"><img v-show="isVisibleLoadicon" src="/images/icon_loader.gif"></div>
   </div>
 </template>
 
@@ -86,7 +90,7 @@ export default {
         temperature: '',
         detail: ''
       },
-      isVisibleLoadicon: true,
+      isVisibleLoadicon: false,
       taskList: [],
       isActive: false
     }
@@ -102,9 +106,10 @@ export default {
         var lastMonth = monthArray[monthArray.length - 1];
         var taskArray = lastMonth.tasks;
         var lastTask = taskArray[taskArray.length - 1];
+        console.log(lastTask.visibility_state);
         axios.get('/tasks/task_list', {
           params: {
-            // this.$data.taskListの一番最後のtaskのstarAtとidを指定する
+          // this.$data.taskListの一番最後のtaskのstarAtとidを指定する
             next_start_at: lastTask.start_at,
             next_id: lastTask.id
           }
@@ -249,6 +254,30 @@ export default {
         return satColor;
       } else {
         return WeekChars[wDay];
+      }
+    },
+    deleteTask: function() {
+      if(window.confirm('削除してもいいですか？')){
+        axios.post('/tasks/' + this.$data.formTask.id + '/delete_task', {
+          task: {
+            title: this.$data.formTask.title,
+            place: this.$data.formTask.place,
+            latitude: this.$data.formTask.lat,
+            longitude: this.$data.formTask.lon,
+            weather_infomation: this.$data.formTask.weather,
+            temperature: this.$data.formTask.temperature,
+            detail: this.$data.formTask.detail,
+            start_at: this.$data.formTask.startAt
+          }
+        }).then((response) => {
+          if (response.data.success) {
+            this.resetFormData();
+            this.$data.formTask.show = false;
+            this.fetchTasks();
+          } else {
+            alert("error!");
+          }
+        });
       }
     },
     fetchTasks: function() {

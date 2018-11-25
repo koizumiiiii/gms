@@ -40,6 +40,7 @@ button {
   cursor: pointer;
   display: flex;
   align-items: center;
+  box-shadow: 0 0 10px rgba(51,55,68,.15);
 }
 .task_list + .task_list {
   margin-top: 5px;
@@ -75,12 +76,15 @@ button {
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
-}
-.form_task_inner__btn_area {
-  display: flex;
-  margin-bottom: 10px;
-  justify-content: space-between;
-  align-items: center;
+  .form_task_inner__btn_area {
+    display: flex;
+    margin-bottom: 10px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .form_task_inner__input_area__delete {
+    margin-top: 15px;
+  }
 }
 
 input {
@@ -99,9 +103,14 @@ textarea {
   padding: 10px;
   width: 100%;
 }
-#btn_cancel {
+.btn_cancel {
   border: 0;
   color: #bbb;
+}
+.btn_delete {
+  width: 100%;
+  padding: 10px;
+  background: #eee;
 }
 .input_textarea {
   height: 80px;
