@@ -52,6 +52,7 @@ test:
 #
 production:
   <<: *default
+  url: <%= ENV['DATABASE_URL'] %>
   database: gms_production
   username: gms
   password: <%= ENV['GMS_DATABASE_PASSWORD'] %>
