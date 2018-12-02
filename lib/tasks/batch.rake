@@ -24,10 +24,21 @@ namespace :batch do
     logger.info("message count : #{messages.size}");
 
     if messages.size > 0
-      post_message = "=== 本日のタスク ===\n\n" + messages.join("\n\n");
+      post_message = "\n== 本日のタスク ===\n\n" + messages.join("\n\n");
 
       # post line
       logger.info("--- post message ---\n#{post_message}");
+      
+      uri = URI.parse("https://notify-api.line.me/api/notify")
+      https = Net::HTTP.new(uri.host, uri.port)
+      https.use_ssl = true
+      
+      req = Net::HTTP::Post.new(uri.request_uri)
+      req["Authorization"] = "Bearer HnAsop8EOwkgNMYEa9OIklcon6NGpJ6JqbpFc4fOL2h"
+      req["Content-Type"] = 'application/x-www-form-urlencoded;charset=UTF-8'
+      req.set_form_data({message: post_message})
+      
+      res = https.request(req)
     end
 
     logger.info("finished post_line batch");
