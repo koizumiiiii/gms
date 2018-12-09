@@ -1,7 +1,7 @@
-module BatchTest
+module LineNotify
   LINE_API = "https://notify-api.line.me/api/notify"
   LINE_TOKEN = "Bearer HnAsop8EOwkgNMYEa9OIklcon6NGpJ6JqbpFc4fOL2h"
-  
+
   def post_line
     logger = Logger.new('log/batch_post_line.log')
     logger.info("start post_line batch");
@@ -25,7 +25,7 @@ module BatchTest
     logger.info("message count : #{messages.size}");
 
     if messages.size > 0
-      post_message = "\n== 本日のタスク ===\n\n" + messages.join("\n\n");
+      post_message = "\n== " + target_datetime_start_at.strftime('%m/%d') + "のタスク ===\n\n" + messages.join("\n\n") + "\n\n 予定の追加・変更はここから\n https://glacial-garden-80709.herokuapp.com/";
 
       # post line
       logger.info("--- post message ---\n#{post_message}");
@@ -39,7 +39,7 @@ module BatchTest
       req["Content-Type"] = 'application/x-www-form-urlencoded;charset=UTF-8'
       req.set_form_data({message: post_message})
 
-      res = https.request(req)
+      https.request(req)
     end
 
     logger.info("finished post_line batch");

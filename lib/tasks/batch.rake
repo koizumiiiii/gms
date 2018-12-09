@@ -1,6 +1,6 @@
 namespace :batch do
-  require "./app/controllers/line_post.rb"
-  include BatchTest
+  require "line/line_notify.rb"
+  include LineNotify
 
   desc "GMSアプリで使用するバッチ処理"
 
