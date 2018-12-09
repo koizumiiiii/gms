@@ -98,7 +98,20 @@ export default {
   },
   methods: {
     visibilityChanged: function(isVisibleLoadicon) {
+      var loading = document.getElementById('loading');
+      var loadingTop = loading.getBoundingClientRect().top;
+      var innerHeight = window.innerHeight;
+      var scrollPos = window.scrollY;
+      console.log(scrollPos + innerHeight - loadingTop);
+      if (scrollPos + innerHeight < loadingTop) {
+        return;
+      }
+
+      console.log('visibilityChanged');
+      console.log(isVisibleLoadicon);
+      console.log(this.$data.taskList.length);
       if (isVisibleLoadicon && this.$data.taskList.length > 0) {
+        console.log('loading...');
         // 次のn件をロードする
         var monthArray = this.$data.taskList;
         var lastMonth = monthArray[monthArray.length - 1];
@@ -107,14 +120,18 @@ export default {
         console.log(lastTask.visibility_state);
         axios.get('/tasks/task_list', {
           params: {
-          // this.$data.taskListの一番最後のtaskのstarAtとidを指定する
+            // this.$data.taskListの一番最後のtaskのstarAtとidを指定する
             next_start_at: lastTask.start_at,
             next_id: lastTask.id
           }
         }).then((response) => {
+          console.log('API response');
           if (Object.keys(response.data).length > 0) {
             this.buildTaskList(response.data);
+            var that = this;
+            setTimeout(function() {that.visibilityChanged(true);}, 0);
           } else {
+            console.log('hide load icon');
             this.$data.isVisibleLoadicon = false
           }
         })
@@ -178,30 +195,12 @@ export default {
         }
       });
     },
-    editTaskDisplayed: function() {
-      /*
-      if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
-        setTimeout(function() {
-          console.log("hoge");
-          var container = document.getElementsByClassName('pac-container');
-          console.log(container);
-          if (container && container.length > 0) {
-            console.log("uga");
-            container[0].addEventListener('touchend', function(e) {
-              e.stopImmediatePropagation();
-            });
-          }
-        }, 500);
-      }
-      */
-    },
     cancelNewTask: function() {
       this.$data.formTask.show = false;
       this.resetFormData();
     },
     showNewTask: function(event) {
       this.$data.formTask.show = true;
-      this.editTaskDisplayed();
     },
     changeTask: function(event) {
       var monthIndex = parseInt(event.currentTarget.getAttribute('data-month-index'));
@@ -218,7 +217,6 @@ export default {
       this.$data.formTask.weather = targetTask.weather_information;
       this.$data.formTask.temperature = targetTask.temperature;
       this.$data.formTask.show = true;
-      this.editTaskDisplayed();
 
       // vue-google-autocompleteの処理でv-modelのバインドが動かないので、強引に値を上書きしている。
       setTimeout(function(){
@@ -298,9 +296,18 @@ export default {
       }
     },
     fetchTasks: function() {
+      console.log('fetchTasks');
       this.$data.taskList = [];
       axios.get('/tasks/task_list').then((response) => {
-        this.buildTaskList(response.data);
+        console.log('fetchTasks API response');
+        if (Object.keys(response.data).length > 0) {
+          this.buildTaskList(response.data);
+          var that = this;
+          setTimeout(function() {that.visibilityChanged(true);}, 0);
+        } else {
+          console.log('fetchTasks : hide load icon');
+          this.$data.isVisibleLoadicon = false
+        }
       })
     }
   }
