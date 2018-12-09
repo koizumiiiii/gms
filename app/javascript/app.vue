@@ -181,19 +181,21 @@ export default {
       });
     },
     editTaskDisplayed: function() {
-      if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
-        setTimeout(function() {
-          console.log("hoge");
-          var container = document.getElementsByClassName('pac-container');
-          console.log(container);
-          if (container && container.length > 0) {
-            console.log("uga");
-            container[0].addEventListener('touchend', function(e) {
-              e.stopImmediatePropagation();
-            });
-          }
-        }, 500);
-      }
+      setTimeout(function() {
+        if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
+          setTimeout(function() {
+            console.log("hoge");
+            var container = document.getElementsByClassName('pac-container');
+            console.log(container);
+            if (container && container.length > 0) {
+              console.log("uga");
+              container[0].addEventListener('touchend', function(e) {
+                e.stopImmediatePropagation();
+              });
+            }
+          }, 500);
+        }
+      }, 0);
     },
     cancelNewTask: function() {
       this.$data.formTask.show = false;
