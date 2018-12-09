@@ -1,8 +1,7 @@
 <template>
   <div id="app">
     <h1 class="title"></h1>
-    <transition v-if="formTask.show">
-      <div class="form_task_wrapper">
+      <div v-show="formTask.show" class="form_task_wrapper">
         <div class="form_task_inner">
           <div v-if="!formTask.id" class="form_task_inner__btn_area">
             <button class="btn_cancel" v-on:click="cancelNewTask" type="button">閉じる</button>
@@ -39,8 +38,7 @@
           </div>
         </div>
       </div>
-    </transition>
-    <div v-else class="form_task_btn">
+    <div v-show="!formTask.show" class="form_task_btn">
       <button id="new_task" v-on:click="showNewTask">+</button>
     </div>
     <section v-cloak v-for="(monthList, monthIndex) in taskList" v-bind:id="monthList.month" class="task_wrapper">
@@ -181,21 +179,21 @@ export default {
       });
     },
     editTaskDisplayed: function() {
-      setTimeout(function() {
-        if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
-          setTimeout(function() {
-            console.log("hoge");
-            var container = document.getElementsByClassName('pac-container');
-            console.log(container);
-            if (container && container.length > 0) {
-              console.log("uga");
-              container[0].addEventListener('touchend', function(e) {
-                e.stopImmediatePropagation();
-              });
-            }
-          }, 500);
-        }
-      }, 0);
+      /*
+      if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
+        setTimeout(function() {
+          console.log("hoge");
+          var container = document.getElementsByClassName('pac-container');
+          console.log(container);
+          if (container && container.length > 0) {
+            console.log("uga");
+            container[0].addEventListener('touchend', function(e) {
+              e.stopImmediatePropagation();
+            });
+          }
+        }, 500);
+      }
+      */
     },
     cancelNewTask: function() {
       this.$data.formTask.show = false;
