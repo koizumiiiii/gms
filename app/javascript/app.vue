@@ -90,7 +90,7 @@ export default {
         temperature: '',
         detail: ''
       },
-      isVisibleLoadicon: false,
+      isVisibleLoadicon: true,
       taskList: [],
       isActive: false
     }
@@ -180,12 +180,28 @@ export default {
         }
       });
     },
+    editTaskDisplayed: function() {
+      if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
+        setTimeout(function() {
+          console.log("hoge");
+          var container = document.getElementsByClassName('pac-container');
+          console.log(container);
+          if (container && container.length > 0) {
+            console.log("uga");
+            container[0].addEventListener('touchend', function(e) {
+              e.stopImmediatePropagation();
+            });
+          }
+        }, 500);
+      }
+    },
     cancelNewTask: function() {
       this.$data.formTask.show = false;
       this.resetFormData();
     },
     showNewTask: function(event) {
       this.$data.formTask.show = true;
+      this.editTaskDisplayed();
     },
     changeTask: function(event) {
       var monthIndex = parseInt(event.currentTarget.getAttribute('data-month-index'));
@@ -202,6 +218,7 @@ export default {
       this.$data.formTask.weather = targetTask.weather_information;
       this.$data.formTask.temperature = targetTask.temperature;
       this.$data.formTask.show = true;
+      this.editTaskDisplayed();
 
       // vue-google-autocompleteの処理でv-modelのバインドが動かないので、強引に値を上書きしている。
       setTimeout(function(){
@@ -287,17 +304,6 @@ export default {
       })
     }
   }
-}
-
-if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
-  setTimeout(function() {
-    var container = document.getElementsByClassName('pac-container');
-    if (container && container.length > 0) {
-      container[0].addEventListener('touchend', function(e) {
-        e.stopImmediatePropagation();
-      });
-    }
-  }, 500);
 }
 
 </script>
