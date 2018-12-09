@@ -290,12 +290,14 @@ export default {
 }
 
 if (navigator.userAgent.match(/(iPad|iPhone|iPod)/g)) {
-    setTimeout(function() {
-        var container = document.getElementsByClassName('pac-container')[0];
-        container.addEventListener('touchend', function(e) {
-            e.stopImmediatePropagation();
-        });
-    }, 500);
+  setTimeout(function() {
+    var container = document.getElementsByClassName('pac-container');
+    if (container && container.length > 0) {
+      container[0].addEventListener('touchend', function(e) {
+        e.stopImmediatePropagation();
+      });
+    }
+  }, 500);
 }
 
 </script>
