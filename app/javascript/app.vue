@@ -146,6 +146,8 @@ export default {
       this.$data.formTask.id = '';
       this.$data.formTask.title = '';
       this.$data.formTask.place = '';
+      this.$data.formTask.lat = '';
+      this.$data.formTask.lon = '';
       this.$data.formTask.detail = '';
       this.$data.formTask.startAt = '';
     },
@@ -200,6 +202,7 @@ export default {
       this.resetFormData();
     },
     showNewTask: function(event) {
+      document.getElementById('map').value = '';
       this.$data.formTask.show = true;
     },
     changeTask: function(event) {
