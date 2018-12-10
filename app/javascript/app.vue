@@ -15,7 +15,7 @@
           </div>
           <div class="form_task_inner__input_area">
             <input v-model="formTask.title" type="text" name="title" placeholder="タスクタイトル" />
-            <input v-model="formTask.startAt" type="datetime-local" name="start_at"/>
+            <input v-model="formTask.startAt" type="datetime-local" name="start_at" placeholder="年/月/日 00:00" />
             <vue-google-autocomplete
               ref="formTask.place"
               id="map"
