@@ -124,11 +124,14 @@ input {
   padding: 10px;
   border: $border;
   background: #fff;
+  border-radius: 0;
 }
 input + input {
   margin-top: 10px;
 }
-
+input[type=datetime-local] {
+  background: none;
+}
 textarea {
   border: $border;
   margin-top: 10px;
