@@ -15,7 +15,7 @@
           </div>
           <div class="form_task_inner__input_area">
             <input v-model="formTask.title" type="text" name="title" placeholder="タスクタイトル" />
-            <input v-model="formTask.startAt" type="datetime-local" name="start_at" placeholder="年/月/日 00:00" />
+            <input v-model="formTask.startAt" type="datetime-local" name="start_at" placeholder="時間" />
             <vue-google-autocomplete
               ref="formTask.place"
               id="map"
@@ -42,7 +42,7 @@
       <button id="new_task" v-on:click="showNewTask">+</button>
     </div>
     <section v-cloak v-for="(monthList, monthIndex) in taskList" v-bind:id="monthList.month" class="task_wrapper">
-      <h2 class="task_ym">{{monthList.month}}</h2>
+      <h2 class="task_ym"><span class="task_ym__inner">{{monthList.month}}</span></h2>
       <ul>
         <li v-on:click="changeTask" v-for="(task, taskIndex) in monthList.tasks" v-bind:id="'row_task_' + task.id" v-bind:data-month-index="monthIndex" v-bind:data-task-index="taskIndex" class="task_list">
           <div class="task_head">
