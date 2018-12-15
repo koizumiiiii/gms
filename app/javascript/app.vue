@@ -64,7 +64,7 @@
     <div id="loading" class="icon_loading" v-observe-visibility="visibilityChanged"><img v-show="isVisibleLoadicon" src="/images/icon_loader.gif"></div>
   </div>
 </template>
-
+<script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
 <script>
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import axios from 'axios';
